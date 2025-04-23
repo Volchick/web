@@ -1,48 +1,36 @@
 import express, { Request, Response } from "express"
-import mongoose from "mongoose"
-import User from "./models/User"
+import usersRouter from "./routes/users.routes"
+import { connectDB } from "./config/ConnectDB"
+import swaggerUI from "swagger-ui-express";
+import swaggerSpec from "./config/openAPI";
+
 const app = express()
 const port = 3000
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
 
-mongoose
-    .connect("mongodb://admin:1234@localhost:27017/web?authSource=admin")
-    .then(() => console.log("DB connected!"))
-    .catch((err) => console.error(err))
+app.use("/users", usersRouter)
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+connectDB()
 
-// Получение всех пользователей
-app.get("/users", async (req: Request, res: Response) => {
-    try {
-        const users = await User.find();
-        res.status(201).json(users);
-    } catch (e) {
-        res.status(400).json({ message: (e as Error).message })
-    }
+app.set("view engine", "ejs")
+app.get('/ejs-pages', (req: Request, res: Response) => {
+    res.render('layout', { title: "ejs-pages", message: "Hi, user!", content: "index", content2: "about" })
+})
+app.get('/about', (req: Request, res: Response) => {
+    res.render('layout', { title: "about", content: "about" })
 })
 
-// Добавление пользователя
-app.post("/users", async (req: Request, res: Response) => {
-    try {
-        console.log(req.body);
-        const user = new User(req.body);
-        await user.save();
-        res.status(201).json(user);
-    } catch (e) {
-        res.status(400).json({ message: (e as Error).message })
-    }
+app.get('/', (req: Request, res: Response) => {
+    res.render('layout', { title: "Main", content: "main" })
 })
 
-// Удаление пользователя 
-app.delete("/users", async (req: Request, res: Response) => {
-    try {
-        console.log(req.body);
-        const result = await User.deleteOne(req.body);
-        res.status(201).json(result);
-    } catch (e) {
-        res.status(400).json({ message: (e as Error).message })
-    }
+app.post('/', (req: Request, res: Response) => {
+    console.log(req.body)
+    console.log(req.headers)
+    res.send('Hello World!')
 })
 
 app.listen(port, () => {
