@@ -25,15 +25,24 @@ const router = Router();
  *             type: object
  *             required: [email, password]
  *             properties:
+ *               username:
+ *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 30
+ *                 example: "Кто-то"
  *               email:
  *                 type: string
  *                 format: email
- *                 example: "who.@gmail.com"
+ *                 example: "somebody@gmail.com"
  *               password:
  *                 type: string
  *                 format: password
  *                 minLength: 8
- *                 example: "666"
+ *                 example: "1234"
+ *                 role:
+ *                  type: string
+ *                  default: user
+ *                  example: user
  *     responses:
  *       201:
  *         description: Пользователь создан
@@ -42,15 +51,22 @@ const router = Router();
  *             schema:
  *               type: object
  *               properties:
- *                 id:
- *                   type: string
- *                   example: "507f1f77bcf86cd799439011"
- *                 username:
- *                   type: string
- *                   example: "Кто-то"
- *                 email:
- *                   type: string
- *                   example: "somebody.@gmail.com"
+ *                  user: 
+ *                      type: object
+ *                      properties:
+ *                      id:
+ *                          type: string
+ *                          example: "507f1f77bcf86cd799439011"
+ *                      username:
+ *                          type: string
+ *                          example: "Кто-то"
+ *                      email:
+ *                          type: string
+ *                          example: "somebody@gmail.com"
+ *                      token:
+ *                          type: string
+ *                      message:
+ *                          type: string
  *       400:
  *         description: Неверные данные
  *         content:
@@ -107,7 +123,7 @@ router.post("/sign-up", signUp);
  *                   example: "Кто-то"
  *                 email:
  *                   type: string
- *                   example: "somebody.@gmail.com"
+ *                   example: "somebody@gmail.com"
  *       400:
  *         description: Неверные данные
  *         content:
